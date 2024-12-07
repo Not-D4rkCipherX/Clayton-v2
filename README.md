@@ -3,7 +3,7 @@ Clayton BOT
 
 Register Here : [Clayton](https://t.me/claytoncoinbot/game?startapp=1493482017)
 
-## Fitur
+## Features
 
   - Auto Get Account Information
   - Auto Claim Daily Check-In
@@ -14,11 +14,11 @@ Register Here : [Clayton](https://t.me/claytoncoinbot/game?startapp=1493482017)
   - Auto Play Stack Game
   - Multi Account
 
-## Prasyarat
+## Required 
 
 Pastikan Anda telah menginstal Python3.9 dan PIP.
 
-## Instalasi
+## COMMANDS 
 
 1. **Kloning repositori:**
    ```bash
