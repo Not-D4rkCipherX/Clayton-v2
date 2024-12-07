@@ -30,6 +30,6 @@ pkg install python rust git -y
    ```
 4.**START THE BOT**
 ```bash
-python bot.py #or python3 bot.py
+python bot.py
 ```
 **TUTORIAL AVAILABLE ON MY YT**
