@@ -70,22 +70,19 @@ class Clayton:
                         async with session.get(f"{self.base_url}/assets/{js_file}") as response:
                             response.raise_for_status()
                             js_content = await response.text()
-                            match = re.search(r'xCe="([^"]+)"', js_content)
+                            match = re.findall(r'(\w+)\s*=\s*"([^"]+)"', js_content)
                             if match:
-                                self.api_base_id = match.group(1)
-                                return
-                            else:
-                                return None
-                except (aiohttp.ClientError, aiohttp.ContentTypeError, json.JSONDecodeError) as e:
+                                for _, api_base_id in match:
+                                    if api_base_id.startswith("aT83"):
+                                        return api_base_id
+                            return None
+                except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
                     if attempt < retries - 1:
                         await asyncio.sleep(delay)
-                    else:
-                        return None
             else:
                 if attempt < retries - 1:
                     await asyncio.sleep(delay)
-                else:
-                    return None
+        return None
     
     async def user_authorization(self, query: str, retries=5):
         url = f'{self.base_url}/api/{self.api_base_id}/user/authorization'
@@ -1033,7 +1030,29 @@ class Clayton:
                 queries = [line.strip() for line in file if line.strip()]
 
             while True:
-                await self.fetch_api_base_id()
+                print(f"{Fore.YELLOW + Style.BRIGHT}Looking For API Base ID...{Style.RESET_ALL}")
+
+                self.api_base_id = await self.fetch_api_base_id()
+                if not self.api_base_id:
+                    self.log(
+                        f"{Fore.RED + Style.BRIGHT}API Base ID Not Found. {Style.RESET_ALL}"
+                        f"{Fore.WHITE + Style.BRIGHT}Clayton Server May Down{Style.RESET_ALL}"
+                    )
+                    for remaining in range(60, 0, -1):
+                        print(
+                            f"{Fore.CYAN + Style.BRIGHT}[ {datetime.now().astimezone(wib).strftime('%x %X %Z')} ]{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT}[ Wait for{Style.RESET_ALL}"
+                            f"{Fore.YELLOW + Style.BRIGHT} {remaining} {Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT}to Try Again...{Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}   ",
+                            end="\r",
+                            flush=True
+                        )
+                        await asyncio.sleep(1)
+
+                    continue
+
                 self.clear_terminal()
                 self.welcome()
                 self.log(
@@ -1059,7 +1078,7 @@ class Clayton:
                             await asyncio.sleep(1)
                             seconds -= 1
 
-                seconds = 1800
+                seconds = 28800
                 while seconds > 0:
                     formatted_time = self.format_seconds(seconds)
                     print(
