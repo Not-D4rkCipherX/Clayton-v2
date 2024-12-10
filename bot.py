@@ -1,12 +1,12 @@
-import aiohttp
-import asyncio
-import json
-import re
-import os
-import random
+from aiohttp import (
+    ClientResponseError,
+    ClientSession,
+    ClientTimeout
+)
 from colorama import *
 from datetime import datetime
-import pytz
+from fake_useragent import FakeUserAgent
+import asyncio, json, re, os, random, pytz
 
 wib = pytz.timezone('Asia/Jakarta')
 
@@ -23,7 +23,7 @@ class Clayton:
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'same-origin',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0'
+            'User-Agent': FakeUserAgent().random
         }
         self.base_url = "https://tonclayton.fun"
         self.api_base_id = None
@@ -54,7 +54,7 @@ class Clayton:
         return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
     
     async def find_latest_js_file(self):
-        async with aiohttp.ClientSession() as session:
+        async with ClientSession(timeout=ClientTimeout(total=20)) as session:
             async with session.get(self.base_url) as response:
                 response.raise_for_status()
                 html = await response.text()
@@ -66,17 +66,17 @@ class Clayton:
             js_file = await self.find_latest_js_file()
             if js_file:
                 try:
-                    async with aiohttp.ClientSession() as session:
+                    async with ClientSession(timeout=ClientTimeout(total=20)) as session:
                         async with session.get(f"{self.base_url}/assets/{js_file}") as response:
                             response.raise_for_status()
                             js_content = await response.text()
                             match = re.findall(r'(\w+)\s*=\s*"([^"]+)"', js_content)
                             if match:
                                 for _, api_base_id in match:
-                                    if api_base_id.startswith("aT83"):
+                                    if api_base_id.startswith("aT83M535"):
                                         return api_base_id
                             return None
-                except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                except (Exception, ClientResponseError) as e:
                     if attempt < retries - 1:
                         await asyncio.sleep(delay)
             else:
@@ -92,21 +92,17 @@ class Clayton:
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -123,21 +119,17 @@ class Clayton:
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -154,21 +146,17 @@ class Clayton:
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -184,21 +172,17 @@ class Clayton:
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.get(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -212,24 +196,21 @@ class Clayton:
         data = json.dumps({'task_id': task_id})
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -246,21 +227,23 @@ class Clayton:
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
+        headers = {
+            **self.headers,
+            'Content-Length': str(len(data)),
+            'Init-Data': query,
+            'Content-Type': 'application/json'
+        }
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -274,24 +257,21 @@ class Clayton:
         data = json.dumps({'task_id': task_id})
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -304,24 +284,21 @@ class Clayton:
         url = f'{self.base_url}/api/{self.api_base_id}/user/achievements/get'
         headers = {
             **self.headers,
+            'Content-Length': '0',
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -334,24 +311,21 @@ class Clayton:
         url = f'{self.base_url}/api/{self.api_base_id}/user/achievements/claim/{type}/{level}'
         headers = {
             **self.headers,
+            'Content-Length': '0',
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -360,28 +334,79 @@ class Clayton:
                 else:
                     return None
 
-    async def start_game1024(self, query: str, retries=5):
-        url = f'{self.base_url}/api/{self.api_base_id}/game/start'
+    async def claywheel_info(self, query: str, retries=5):
+        url = f'{self.base_url}/api/{self.api_base_id}/spin/info'
         headers = {
             **self.headers,
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.get(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
+                        f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
+                        end="\r",
+                        flush=True
+                    )
+                    await asyncio.sleep(3)
+                else:
+                    return None
+
+    async def perform_claywheel(self, query: str, retries=5):
+        url = f'{self.base_url}/api/{self.api_base_id}/spin/perform'
+        data = json.dumps({'multiplier':3})
+        headers = {
+            **self.headers,
+            'Content-Length': str(len(data)),
+            'Init-Data': query,
+            'Content-Type': 'application/json'
+        }
+        for attempt in range(retries):
+            try:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
+                        response.raise_for_status()
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
+                if attempt < retries - 1:
+                    print(
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
+                        f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
+                        end="\r",
+                        flush=True
+                    )
+                    await asyncio.sleep(3)
+                else:
+                    return None
+                
+    async def start_game1024(self, query: str, retries=5):
+        url = f'{self.base_url}/api/{self.api_base_id}/game/start'
+        headers = {
+            **self.headers,
+            'Content-Length': '0',
+            'Init-Data': query,
+            'Content-Type': 'application/json'
+        }
+        for attempt in range(retries):
+            try:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers) as response:
+                        response.raise_for_status()
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
+                if attempt < retries - 1:
+                    print(
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -395,24 +420,21 @@ class Clayton:
         data = json.dumps({'session_id':session_id, 'maxTile':tile})
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -426,24 +448,21 @@ class Clayton:
         data = json.dumps({'session_id':session_id, 'multiplier':1, 'maxTile':tile})
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -457,24 +476,21 @@ class Clayton:
         data = {}
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, json=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, json=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -488,24 +504,21 @@ class Clayton:
         data = json.dumps({'score':score})
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -518,24 +531,21 @@ class Clayton:
         url = f'{self.base_url}/api/{self.api_base_id}/stack/st-game'
         headers = {
             **self.headers,
+            'Content-Length': '0',
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -549,24 +559,21 @@ class Clayton:
         data = json.dumps({'score':score})
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -580,24 +587,21 @@ class Clayton:
         data = json.dumps({'score':score, 'multiplier':1})
         headers = {
             **self.headers,
+            'Content-Length': str(len(data)),
             'Init-Data': query,
             'Content-Type': 'application/json'
         }
-
         for attempt in range(retries):
             try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data) as response:
+                async with ClientSession(timeout=ClientTimeout(total=20)) as session:
+                    async with session.post(url=url, headers=headers, data=data) as response:
                         response.raise_for_status()
-                        if response.status == 200:
-                            return await response.json()
-                        else:
-                            return None
-            except (aiohttp.ClientError, aiohttp.ContentTypeError) as e:
+                        return await response.json()
+            except (Exception, ClientResponseError) as e:
                 if attempt < retries - 1:
                     print(
-                        f"{Fore.RED + Style.BRIGHT}HTTP ERROR{Style.RESET_ALL}"
-                        f"{Fore.YELLOW + Style.BRIGHT} Retrying... {Style.RESET_ALL}"
+                        f"{Fore.RED + Style.BRIGHT}ERROR.{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Retrying.... {Style.RESET_ALL}"
                         f"{Fore.WHITE + Style.BRIGHT}[{attempt+1}/{retries}]{Style.RESET_ALL}",
                         end="\r",
                         flush=True
@@ -663,14 +667,15 @@ class Clayton:
             for type in ['super-tasks', 'partner-tasks', 'default-tasks', 'daily-tasks']:
                 tasks = await self.all_tasks(query, type)
                 if tasks:
+                    completed = False
                     for task in tasks:
                         task_id = task['task_id']
                         is_completed = task['is_completed']
                         is_claimed = task['is_claimed']
-
                         requires_check = task['task']['requires_check']
-                        if not requires_check:
-                            if task and not is_completed and not is_claimed:
+
+                        if task and not is_completed and not is_claimed:
+                            if not requires_check:
                                 start = await self.start_tasks(query, task_id)
                                 if start and start['message'] == 'Task completed':
                                     self.log(
@@ -679,6 +684,7 @@ class Clayton:
                                         f"{Fore.GREEN + Style.BRIGHT}Is Started{Style.RESET_ALL}"
                                         f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                     )
+                                    await asyncio.sleep(1)
 
                                     claim = await self.claim_tasks(query, task_id)
                                     if claim and claim['message'] == 'Reward claimed':
@@ -699,6 +705,8 @@ class Clayton:
                                             f"{Fore.RED + Style.BRIGHT}Isn't Claimed{Style.RESET_ALL}"
                                             f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                         )
+                                    await asyncio.sleep(1)
+
                                 else:
                                     self.log(
                                         f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
@@ -706,29 +714,9 @@ class Clayton:
                                         f"{Fore.RED + Style.BRIGHT}Isn't Started{Style.RESET_ALL}"
                                         f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                     )
+                                await asyncio.sleep(1)
 
-                            elif task and is_completed and not is_claimed:
-                                claim = await self.claim_tasks(query, task_id)
-                                if claim and claim['message'] == 'Reward claimed':
-                                    self.log(
-                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {task['task']['title']} {Style.RESET_ALL}"
-                                        f"{Fore.GREEN + Style.BRIGHT}Is Claimed{Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT} ] [ Reward{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {claim['reward_tokens']} $CLAY {Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT}-{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {claim['game_attempts']} Ticket {Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
-                                    )
-                                else:
-                                    self.log(
-                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {task['task']['title']} {Style.RESET_ALL}"
-                                        f"{Fore.RED + Style.BRIGHT}Isn't Claimed{Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
-                                    )
-                        else:
-                            if task and not is_completed and not is_claimed:
+                            else:
                                 check = await self.check_tasks(query, task_id)
                                 if check and check['message'] == 'Task completed':
                                     self.log(
@@ -737,6 +725,7 @@ class Clayton:
                                         f"{Fore.GREEN + Style.BRIGHT}Is Checked{Style.RESET_ALL}"
                                         f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                     )
+                                    await asyncio.sleep(1)
 
                                     claim = await self.claim_tasks(query, task_id)
                                     if claim and claim['message'] == 'Reward claimed':
@@ -757,6 +746,8 @@ class Clayton:
                                             f"{Fore.RED + Style.BRIGHT}Isn't Claimed{Style.RESET_ALL}"
                                             f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                         )
+                                    await asyncio.sleep(1)
+
                                 else:
                                     self.log(
                                         f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
@@ -764,27 +755,42 @@ class Clayton:
                                         f"{Fore.RED + Style.BRIGHT}Isn't Checked{Style.RESET_ALL}"
                                         f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                     )
+                                await asyncio.sleep(1)
 
-                            elif task and is_completed and not is_claimed:
-                                claim = await self.claim_tasks(query, task_id)
-                                if claim and claim['message'] == 'Reward claimed':
-                                    self.log(
-                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {task['task']['title']} {Style.RESET_ALL}"
-                                        f"{Fore.GREEN + Style.BRIGHT}Is Claimed{Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT} ] [ Reward{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {claim['reward_tokens']} $CLAY {Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT}-{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {claim['game_attempts']} Ticket {Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
-                                    )
-                                else:
-                                    self.log(
-                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
-                                        f"{Fore.WHITE + Style.BRIGHT} {task['task']['title']} {Style.RESET_ALL}"
-                                        f"{Fore.RED + Style.BRIGHT}Isn't Claimed{Style.RESET_ALL}"
-                                        f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
-                                    )
+                        elif task and is_completed and not is_claimed:
+                            claim = await self.claim_tasks(query, task_id)
+                            if claim and claim['message'] == 'Reward claimed':
+                                self.log(
+                                    f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} {task['task']['title']} {Style.RESET_ALL}"
+                                    f"{Fore.GREEN + Style.BRIGHT}Is Claimed{Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT} ] [ Reward{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} {claim['reward_tokens']} $CLAY {Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT}-{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} {claim['game_attempts']} Ticket {Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                                )
+                            else:
+                                self.log(
+                                    f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} {task['task']['title']} {Style.RESET_ALL}"
+                                    f"{Fore.RED + Style.BRIGHT}Isn't Claimed{Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
+                                )
+                            await asyncio.sleep(1)
+
+                        else:
+                            completed = True
+
+                    if completed:
+                        self.log(
+                            f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} {type} {Style.RESET_ALL}"
+                            f"{Fore.GREEN + Style.BRIGHT}Is Completed{Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
+                        )
+                    await asyncio.sleep(1)
+                        
                 else:
                     self.log(
                         f"{Fore.MAGENTA + Style.BRIGHT}[ Tasks{Style.RESET_ALL}"
@@ -797,6 +803,7 @@ class Clayton:
             if user_achievements:
                 for type, achievements in user_achievements.items():
                     if type in ["friends", "games", "stars"]:
+                        completed = False
                         for achievement in achievements:
                             level = str(achievement['level'])
                             is_completed = achievement['is_completed']
@@ -806,7 +813,7 @@ class Clayton:
                                 claim = await self.claim_achievements(query, type, level)
                                 if claim and claim['reward']:
                                     self.log(
-                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Achievments{Style.RESET_ALL}"
+                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Achievements{Style.RESET_ALL}"
                                         f"{Fore.WHITE + Style.BRIGHT} {type} {Style.RESET_ALL}"
                                         f"{Fore.MAGENTA + Style.BRIGHT}-{Style.RESET_ALL}"
                                         f"{Fore.WHITE + Style.BRIGHT} Level {level} {Style.RESET_ALL}"
@@ -817,17 +824,30 @@ class Clayton:
                                     )
                                 else:
                                     self.log(
-                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Achievments{Style.RESET_ALL}"
+                                        f"{Fore.MAGENTA + Style.BRIGHT}[ Achievements{Style.RESET_ALL}"
                                         f"{Fore.WHITE + Style.BRIGHT} {type} {Style.RESET_ALL}"
                                         f"{Fore.MAGENTA + Style.BRIGHT}-{Style.RESET_ALL}"
                                         f"{Fore.WHITE + Style.BRIGHT} Level {level} {Style.RESET_ALL}"
                                         f"{Fore.RED + Style.BRIGHT}Isn't Claimed{Style.RESET_ALL}"
                                         f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                     )
+                                await asyncio.sleep(1)
+
+                            else:
+                                completed = True
+
+                        if completed:
+                            self.log(
+                                f"{Fore.MAGENTA + Style.BRIGHT}[ Achievements{Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT} {type} {Style.RESET_ALL}"
+                                f"{Fore.GREEN + Style.BRIGHT}Is Completed{Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
+                            )
+                        await asyncio.sleep(1)
 
             else:
                 self.log(
-                    f"{Fore.MAGENTA + Style.BRIGHT}[ Achievments{Style.RESET_ALL}"
+                    f"{Fore.MAGENTA + Style.BRIGHT}[ Achievements{Style.RESET_ALL}"
                     f"{Fore.RED + Style.BRIGHT} Data Is None {Style.RESET_ALL}"
                     f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                 )
@@ -835,7 +855,70 @@ class Clayton:
 
             user = await self.user_authorization(query)
             ticket = user['user']['daily_attempts']
-            if ticket > 0:
+            if ticket is not None and ticket > 0:
+                self.log(
+                    f"{Fore.MAGENTA + Style.BRIGHT}[ Play Game{Style.RESET_ALL}"
+                    f"{Fore.GREEN + Style.BRIGHT} Is Prepared {Style.RESET_ALL}"
+                    f"{Fore.MAGENTA + Style.BRIGHT}] [ Ticket{Style.RESET_ALL}"
+                    f"{Fore.WHITE + Style.BRIGHT} {ticket} {Style.RESET_ALL}"
+                    f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                )
+                await asyncio.sleep(1)
+
+                if ticket >= 2:
+                    claywheel = await self.claywheel_info(query)
+                    if claywheel:
+                        free_spin = claywheel['free_spins']
+                        if free_spin and free_spin > 0:
+                            perform = await self.perform_claywheel(query)
+                            if perform:
+                                ticket -= 2
+                                self.log(
+                                    f"{Fore.MAGENTA + Style.BRIGHT}[ Game Claywheel{Style.RESET_ALL}"
+                                    f"{Fore.GREEN + Style.BRIGHT} Is Started {Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT}] [ Reward{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} {perform['win']} $CLAY {Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT}] [ Ticket{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} {ticket} Left {Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                                )
+                            else:
+                                self.log(
+                                    f"{Fore.MAGENTA + Style.BRIGHT}[ Game Claywheel{Style.RESET_ALL}"
+                                    f"{Fore.RED + Style.BRIGHT} Isn't Started {Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                                )
+                            await asyncio.sleep(3)
+                            
+                        else:
+                            self.log(
+                                f"{Fore.MAGENTA + Style.BRIGHT}[ Game Claywheel{Style.RESET_ALL}"
+                                f"{Fore.YELLOW + Style.BRIGHT} No Available Attempts {Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                            )
+                    else:
+                        self.log(
+                            f"{Fore.MAGENTA + Style.BRIGHT}[ Game Claywheel{Style.RESET_ALL}"
+                            f"{Fore.RED + Style.BRIGHT} Data Is None {Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                        )
+                else:
+                    self.log(
+                        f"{Fore.MAGENTA + Style.BRIGHT}[ Game Claywheel{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} Isn't Started {Style.RESET_ALL}"
+                        f"{Fore.MAGENTA + Style.BRIGHT}] [ Reason{Style.RESET_ALL}"
+                        f"{Fore.WHITE + Style.BRIGHT} Tickets Not Enough {Style.RESET_ALL}"
+                        f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                    )
+
+                if ticket <= 0:
+                    self.log(
+                        f"{Fore.MAGENTA + Style.BRIGHT}[ Play Game{Style.RESET_ALL}"
+                        f"{Fore.YELLOW + Style.BRIGHT} No Ticket Remaining {Style.RESET_ALL}"
+                        f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                    )
+                    return
+
                 start = await self.start_game1024(query)
                 if start and start['message'] == 'Game started successfully':
                     ticket -= 1
@@ -843,18 +926,23 @@ class Clayton:
                     tile = 2
                     self.log(
                         f"{Fore.MAGENTA + Style.BRIGHT}[ Game 1024{Style.RESET_ALL}"
-                        f"{Fore.GREEN + Style.BRIGHT} Is Started {Style.RESET_ALL}"
-                        f"{Fore.MAGENTA + Style.BRIGHT}] [ ID{Style.RESET_ALL}"
-                        f"{Fore.WHITE + Style.BRIGHT} {session_id} {Style.RESET_ALL}"
+                        f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                        f"{Fore.GREEN + Style.BRIGHT}Is Started{Style.RESET_ALL}"
+                        f"{Fore.MAGENTA + Style.BRIGHT} ] [ Ticket{Style.RESET_ALL}"
+                        f"{Fore.WHITE + Style.BRIGHT} {ticket} Left {Style.RESET_ALL}"
                         f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                     )
+                    await asyncio.sleep(1)
                     
                     save = await self.save_tile(query, session_id, tile)
                     if save and save['message'] == 'MaxTile saved successfully':
                         self.log(
                             f"{Fore.MAGENTA + Style.BRIGHT}[ Game 1024{Style.RESET_ALL}"
-                            f"{Fore.GREEN + Style.BRIGHT} {tile} Tile Is Saved {Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT}] [ Status{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} {tile} Tiles {Style.RESET_ALL}"
+                            f"{Fore.GREEN + Style.BRIGHT}Is Saved{Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                         )
 
                         for remaining in range(150, 0, -1):
@@ -874,8 +962,9 @@ class Clayton:
                         if over:
                             self.log(
                                 f"{Fore.MAGENTA + Style.BRIGHT}[ Game 1024{Style.RESET_ALL}"
-                                f"{Fore.GREEN + Style.BRIGHT} Is Completed {Style.RESET_ALL}"
-                                f"{Fore.MAGENTA + Style.BRIGHT}] [ Reward{Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                f"{Fore.GREEN + Style.BRIGHT}Is Completed{Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT} ] [ Reward{Style.RESET_ALL}"
                                 f"{Fore.WHITE + Style.BRIGHT} {over['earn']} $CLAY {Style.RESET_ALL}"
                                 f"{Fore.MAGENTA + Style.BRIGHT}-{Style.RESET_ALL}"
                                 f"{Fore.WHITE + Style.BRIGHT} {over['xp_earned']} XP {Style.RESET_ALL}"
@@ -884,14 +973,18 @@ class Clayton:
                         else:
                             self.log(
                                 f"{Fore.MAGENTA + Style.BRIGHT}[ Game 1024{Style.RESET_ALL}"
-                                f"{Fore.RED + Style.BRIGHT} Isn't Completed {Style.RESET_ALL}"
-                                f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                f"{Fore.RED + Style.BRIGHT}Isn't Completed{Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                             )
                     else:
                         self.log(
                             f"{Fore.MAGENTA + Style.BRIGHT}[ Game 1024{Style.RESET_ALL}"
-                            f"{Fore.RED + Style.BRIGHT} Tile Isn't Saved {Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT}] [ Status{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} {tile} Tiles {Style.RESET_ALL}"
+                            f"{Fore.RED + Style.BRIGHT}Isn't Saved{Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                         )
                 else:
                     self.log(
@@ -899,97 +992,115 @@ class Clayton:
                         f"{Fore.RED + Style.BRIGHT} Isn't Started {Style.RESET_ALL}"
                         f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                     )
-                await asyncio.sleep(2)
+                await asyncio.sleep(3)
 
-                start = await self.start_clayball(query)
-                if start and start['session_id']:
-                    ticket = start['attempts']
-                    self.log(
-                        f"{Fore.MAGENTA + Style.BRIGHT}[ Game Clayball{Style.RESET_ALL}"
-                        f"{Fore.GREEN + Style.BRIGHT} Is Started {Style.RESET_ALL}"
-                        f"{Fore.MAGENTA + Style.BRIGHT}] [ ID{Style.RESET_ALL}"
-                        f"{Fore.WHITE + Style.BRIGHT} {start['session_id']} {Style.RESET_ALL}"
-                        f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
-                    )
+                while ticket > 0:
+                    if ticket <= 0:
+                        break
 
-                    for remaining in range(150, 0, -1):
-                        print(
-                            f"{Fore.CYAN + Style.BRIGHT}[ {datetime.now().astimezone(wib).strftime('%x %X %Z')} ]{Style.RESET_ALL}"
-                            f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT}[ Wait for{Style.RESET_ALL}"
-                            f"{Fore.YELLOW + Style.BRIGHT} {remaining} {Style.RESET_ALL}"
-                            f"{Fore.WHITE + Style.BRIGHT}Seconds to Complete Game{Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}   ",
-                            end="\r",
-                            flush=True
+                    start = await self.start_clayball(query)
+                    if start:
+                        session_id = start['session_id']
+                        ticket = start['attempts']
+                        self.log(
+                            f"{Fore.MAGENTA + Style.BRIGHT}[ Game Clayball{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                            f"{Fore.GREEN + Style.BRIGHT}Is Started{Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT} ] [ Ticket{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} {ticket} Left {Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                         )
                         await asyncio.sleep(1)
 
-                    score = 300
-                    end = await self.end_clayball(query, score)
-                    if end:
-                        self.log(
-                            f"{Fore.MAGENTA + Style.BRIGHT}[ Game Clayball{Style.RESET_ALL}"
-                            f"{Fore.GREEN + Style.BRIGHT} Is Completed {Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT}] [ Reward{Style.RESET_ALL}"
-                            f"{Fore.WHITE + Style.BRIGHT} {end['reward']} $CLAY {Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
-                        )
+                        for remaining in range(150, 0, -1):
+                            print(
+                                f"{Fore.CYAN + Style.BRIGHT}[ {datetime.now().astimezone(wib).strftime('%x %X %Z')} ]{Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT} | {Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT}[ Wait for{Style.RESET_ALL}"
+                                f"{Fore.YELLOW + Style.BRIGHT} {remaining} {Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT}Seconds to Complete Game{Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}   ",
+                                end="\r",
+                                flush=True
+                            )
+                            await asyncio.sleep(1)
+
+                        score = 250
+                        end = await self.end_clayball(query, score)
+                        if end:
+                            self.log(
+                                f"{Fore.MAGENTA + Style.BRIGHT}[ Game Clayball{Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                f"{Fore.GREEN + Style.BRIGHT}Is Completed{Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT} ] [ Reward{Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT} {end['reward']} $CLAY {Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                            )
+                        else:
+                            self.log(
+                                f"{Fore.MAGENTA + Style.BRIGHT}[ Game Clayball{Style.RESET_ALL}"
+                                f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                f"{Fore.RED + Style.BRIGHT}Isn't Completed{Style.RESET_ALL}"
+                                f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}              "
+                            )
                     else:
                         self.log(
                             f"{Fore.MAGENTA + Style.BRIGHT}[ Game Clayball{Style.RESET_ALL}"
-                            f"{Fore.RED + Style.BRIGHT} Isn't Completed {Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}              "
+                            f"{Fore.RED + Style.BRIGHT} Isn't Started {Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                         )
-                else:
-                    self.log(
-                        f"{Fore.MAGENTA + Style.BRIGHT}[ Game Clayball{Style.RESET_ALL}"
-                        f"{Fore.RED + Style.BRIGHT} Isn't Started {Style.RESET_ALL}"
-                        f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
-                    )
-                await asyncio.sleep(2)
+                    await asyncio.sleep(3)
 
-                while ticket > 0:
+                    if ticket <= 0:
+                        break
+
                     game_stack = await self.start_gamestack(query)
-                    if game_stack and game_stack['session_id']:
+                    if game_stack:
+                        session_id = game_stack['session_id']
                         ticket -= 1
                         self.log(
                             f"{Fore.MAGENTA + Style.BRIGHT}[ Game Stack{Style.RESET_ALL}"
-                            f"{Fore.GREEN + Style.BRIGHT} Is Started {Style.RESET_ALL}"
-                            f"{Fore.MAGENTA + Style.BRIGHT}] [ ID{Style.RESET_ALL}"
-                            f"{Fore.WHITE + Style.BRIGHT} {game_stack['session_id']} {Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                            f"{Fore.GREEN + Style.BRIGHT}Is Started{Style.RESET_ALL}"
+                            f"{Fore.MAGENTA + Style.BRIGHT} ] [ Ticket{Style.RESET_ALL}"
+                            f"{Fore.WHITE + Style.BRIGHT} {ticket} Left {Style.RESET_ALL}"
                             f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                         )
 
                         score = 10
-                        while score <= 90:
+                        while True:
+                            if score == 100:
+                                break
+
                             update = await self.upadate_stack(query, score)
                             if update and update['message'] == 'Score updated successfully':
                                 self.log(
                                     f"{Fore.MAGENTA + Style.BRIGHT}[ Game Stack{Style.RESET_ALL}"
-                                    f"{Fore.GREEN + Style.BRIGHT} Success to Update {Style.RESET_ALL}"
-                                    f"{Fore.MAGENTA + Style.BRIGHT}] [ Score{Style.RESET_ALL}"
-                                    f"{Fore.WHITE + Style.BRIGHT} {score} {Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                    f"{Fore.GREEN + Style.BRIGHT}Is Success to Update{Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT} ] [ Score{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} {score} Remaining {Style.RESET_ALL}"
                                     f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                                 )
                             else:
                                 self.log(
                                     f"{Fore.MAGENTA + Style.BRIGHT}[ Game Stack{Style.RESET_ALL}"
-                                    f"{Fore.RED + Style.BRIGHT} Failed to Update {Style.RESET_ALL}"
-                                    f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                    f"{Fore.RED + Style.BRIGHT}Isn't Success to Update{Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                 )
-                                break
+                            await asyncio.sleep(1)
 
                             score += 10
-                            await asyncio.sleep(1)
 
                         if score == 100:
                             end = await self.end_stack(query, score)
                             if end:
                                 self.log(
                                     f"{Fore.MAGENTA + Style.BRIGHT}[ Game Stack{Style.RESET_ALL}"
-                                    f"{Fore.GREEN + Style.BRIGHT} Is Completed {Style.RESET_ALL}"
-                                    f"{Fore.MAGENTA + Style.BRIGHT}] [ Reward{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                    f"{Fore.GREEN + Style.BRIGHT}Is Completed{Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT} ] [ Reward{Style.RESET_ALL}"
                                     f"{Fore.WHITE + Style.BRIGHT} {end['earn']} $CLAY {Style.RESET_ALL}"
                                     f"{Fore.MAGENTA + Style.BRIGHT}-{Style.RESET_ALL}"
                                     f"{Fore.WHITE + Style.BRIGHT} {end['xp_earned']} XP {Style.RESET_ALL}"
@@ -998,18 +1109,18 @@ class Clayton:
                             else:
                                 self.log(
                                     f"{Fore.MAGENTA + Style.BRIGHT}[ Game Stack{Style.RESET_ALL}"
-                                    f"{Fore.RED + Style.BRIGHT} Isn't Completed {Style.RESET_ALL}"
-                                    f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
+                                    f"{Fore.WHITE + Style.BRIGHT} ID {session_id} {Style.RESET_ALL}"
+                                    f"{Fore.RED + Style.BRIGHT}Isn't Completed{Style.RESET_ALL}"
+                                    f"{Fore.MAGENTA + Style.BRIGHT} ]{Style.RESET_ALL}"
                                 )
+
                     else:
                         self.log(
                             f"{Fore.MAGENTA + Style.BRIGHT}[ Game Stack{Style.RESET_ALL}"
                             f"{Fore.RED + Style.BRIGHT} Isn't Started {Style.RESET_ALL}"
                             f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                         )
-                        break
-
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(3)
 
                 if ticket == 0:
                     self.log(
@@ -1017,6 +1128,7 @@ class Clayton:
                         f"{Fore.YELLOW + Style.BRIGHT} No Ticket Remaining {Style.RESET_ALL}"
                         f"{Fore.MAGENTA + Style.BRIGHT}]{Style.RESET_ALL}"
                     )
+                    
             else:
                 self.log(
                     f"{Fore.MAGENTA + Style.BRIGHT}[ Play Game{Style.RESET_ALL}"
@@ -1078,7 +1190,7 @@ class Clayton:
                             await asyncio.sleep(1)
                             seconds -= 1
 
-                seconds = 28800
+                seconds = 21600
                 while seconds > 0:
                     formatted_time = self.format_seconds(seconds)
                     print(

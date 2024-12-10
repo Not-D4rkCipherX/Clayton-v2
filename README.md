@@ -1,9 +1,11 @@
 ## Features
 
   - Auto Get Account Information
+  - Auto Save User Balance
   - Auto Claim Daily Check-In
   - Auto Completed Tasks
   - Auto Claim User Achievements
+  - Auto Play Claywheel Game
   - Auto Play 1024 Game
   - Auto Play Clayball Game
   - Auto Play Stack Game
