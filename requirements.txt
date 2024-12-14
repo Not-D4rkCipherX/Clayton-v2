@@ -1,4 +1,4 @@
 aiohttp
-fake_useragent
+fake-useragent
 colorama
 pytz
